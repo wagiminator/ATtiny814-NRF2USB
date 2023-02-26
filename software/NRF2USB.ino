@@ -1,6 +1,6 @@
 // ===================================================================================
 // Project:   NRF2USB - nRF24L01+ 2.4GHz Transceiver USB Stick
-// Version:   v1.0
+// Version:   v1.1
 // Year:      2021
 // Author:    Stefan Wagner
 // Github:    https://github.com/wagiminator
@@ -42,10 +42,8 @@
 // Since the ATtiny is operated with 3.3V, its clock frequency should not be higher
 // than 10 MHz.
 //
-// No Arduino core functions or libraries are used. To compile and upload without
-// Arduino IDE download AVR 8-bit toolchain at:
-// https://www.microchip.com/mplab/avr-support/avr-and-arm-toolchains-c-compilers
-// and extract to tools/avr-gcc. Use the makefile to compile and upload.
+// No Arduino core functions or libraries are used. Use the makefile to compile 
+// and upload without Arduino IDE.
 //
 // Fuse Settings: 0:0x00 1:0x00 2:0x02 4:0x00 5:0xC5 6:0x04 7:0x00 8:0x00
 //
@@ -62,7 +60,7 @@
 // -----------------------------------------------------------------------------------
 //  c   set channel       !c2A            set channel to 0x2A (0x00 - 0x7F)
 //  t   set TX address    !t7B271F1F1F    addresses are 5 bytes, LSB first
-//  r   set RX address    !t41C355AA55    addresses are 5 bytes, LSB first
+//  r   set RX address    !r41C355AA55    addresses are 5 bytes, LSB first
 //  s   set speed         !s02            data rate (00:250kbps, 01:1Mbps, 02:2Mbps)
 //
 // Enter just the exclamation mark ('!') for the actual NRF settings to be printed
@@ -379,8 +377,8 @@ void NRF_to_UART(void) {
 void NRF_send(uint8_t *data, uint8_t len) {
   NRF_writeRegister(NRF_REG_STATUS, 0x30);              // clear status flags
   NRF_writeCommand(NRF_CMD_FLUSH_TX);                   // flush TX FIFO
-  NRF_writeBuffer(NRF_CMD_W_TX_PAYLOAD, data, len);     // write payload
   NRF_powerTX();                                        // switch to TX Mode; transmit
+  NRF_writeBuffer(NRF_CMD_W_TX_PAYLOAD, data, len);     // write payload
   while(!(NRF_readRegister(NRF_REG_STATUS) & 0x30));    // wait until finished
   NRF_powerRX();                                        // return to listening
 }
